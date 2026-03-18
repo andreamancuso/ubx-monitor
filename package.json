@@ -1,0 +1,24 @@
+{
+  "name": "ubx-monitor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Lightweight u-blox GNSS monitor built on XFrames",
+  "license": "MPL-2.0",
+  "author": "Andrea Mancuso",
+  "scripts": {
+    "start": "tsx ./src/index.tsx"
+  },
+  "dependencies": {
+    "@xframes/common": "^0.1.1",
+    "@xframes/node": "^0.1.3",
+    "react": "^18.2.0",
+    "serialport": "^12.0.0",
+    "ubx-parser": "^0.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "tsx": "^4.19.1",
+    "typescript": "^5.4.5"
+  }
+}
