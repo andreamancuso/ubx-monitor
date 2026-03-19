@@ -66,6 +66,7 @@ class SerialManager extends EventEmitter {
     });
 
     this.parser.on("NAV-STATUS", (msg) => {
+      this.emit("NAV-STATUS", msg);
       this.emit("message", msg);
     });
 

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { XFrames } from "@xframes/node";
 import { useNavPvt } from "../hooks/useNavPvt";
+import { useNavStatus } from "../hooks/useNavStatus";
 
 const FIX_TYPES: Record<number, string> = {
   0: "No Fix",
@@ -49,8 +50,32 @@ const LabelRow = ({ label, value, color }: { label: string; value: string; color
   </XFrames.Node>
 );
 
+const SPOOF_LABELS: Record<number, string> = {
+  0: "Unknown",
+  1: "OK",
+  2: "Indicated",
+  3: "Multiple",
+};
+
+const SPOOF_COLORS: Record<number, string> = {
+  0: "#7a7b9a",
+  1: "#2ecc71",
+  2: "#f1c40f",
+  3: "#e74c3c",
+};
+
+function formatUptime(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}:${pad2(m)}:${pad2(s)}`;
+  return `${m}:${pad2(s)}`;
+}
+
 export const NavigationStatus = () => {
   const data = useNavPvt();
+  const navStatus = useNavStatus();
 
   if (!data) {
     return (
@@ -77,6 +102,20 @@ export const NavigationStatus = () => {
       <LabelRow label="V Accuracy:" value={`${formatMeters(data.vAcc)} m`} />
       <LabelRow label="Satellites:" value={String(data.numSV)} />
       <LabelRow label="UTC Time:" value={utc} />
+      {navStatus && (
+        <>
+          {navStatus.ttff > 0 && (
+            <LabelRow label="TTFF:" value={`${(navStatus.ttff / 1000).toFixed(1)}s`} />
+          )}
+          <LabelRow label="Uptime:" value={formatUptime(navStatus.msss)} />
+          <LabelRow
+            label="Spoof:"
+            value={SPOOF_LABELS[navStatus.spoofDetState] ?? `Unknown (${navStatus.spoofDetState})`}
+            color={SPOOF_COLORS[navStatus.spoofDetState]}
+          />
+          <LabelRow label="DGPS:" value={navStatus.diffCorr ? "Yes" : "No"} />
+        </>
+      )}
     </XFrames.Node>
   );
 };
