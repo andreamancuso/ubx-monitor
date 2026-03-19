@@ -5,6 +5,7 @@ import { ConsoleView } from "./panels/ConsoleView";
 import { MessageView } from "./panels/MessageView";
 import { NavigationStatus } from "./panels/NavigationStatus";
 import { MapPanel } from "./panels/MapPanel";
+import { PositionTrackingPanel } from "./panels/PositionTrackingPanel";
 import { SkyViewPanel } from "./panels/SkyViewPanel";
 import { SignalStrengthPanel } from "./panels/SignalStrengthPanel";
 
@@ -29,6 +30,9 @@ export const App = () => (
       </XFrames.TabItem>
       <XFrames.TabItem label="Map" style={{ flex: 1, width: "100%" }}>
         <MapPanel />
+      </XFrames.TabItem>
+      <XFrames.TabItem label="Position" style={{ flex: 1, width: "100%" }}>
+        <PositionTrackingPanel />
       </XFrames.TabItem>
       <XFrames.TabItem label="Sky View" style={{ flex: 1, width: "100%" }}>
         <SkyViewPanel />

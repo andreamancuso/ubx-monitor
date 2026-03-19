@@ -18,6 +18,8 @@ export interface NavPvtData {
   min: number;
   sec: number;
   tAcc: number;
+  gSpeed: number;
+  heading: number;
 }
 
 export function useNavPvt() {
@@ -41,6 +43,8 @@ export function useNavPvt() {
         min: msg.min,
         sec: msg.sec,
         tAcc: msg.tAcc,
+        gSpeed: msg.gSpeed,
+        heading: msg.heading,
       });
     };
 
