@@ -20,7 +20,7 @@ const disabledComboStyle = {
 };
 
 export const ConnectionPanel = () => {
-  const { ports, status, error, connect, disconnect, refreshPorts, enableUbxOutput } =
+  const { ports, status, error, connect, disconnect, refreshPorts, enableUbxOutput, coldStart, warmStart, hotStart } =
     useSerialConnection();
   const [selectedPortIndex, setSelectedPortIndex] = useState(0);
   const [selectedBaudIndex, setSelectedBaudIndex] = useState(DEFAULT_BAUD_INDEX);
@@ -93,6 +93,14 @@ export const ConnectionPanel = () => {
         />
         <XFrames.UnformattedText text={status} />
       </XFrames.Node>
+
+      {status === "connected" && (
+        <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, alignItems: "center" }}>
+          <XFrames.Button label="Cold Start" onClick={coldStart} />
+          <XFrames.Button label="Warm Start" onClick={warmStart} />
+          <XFrames.Button label="Hot Start" onClick={hotStart} />
+        </XFrames.Node>
+      )}
 
       {error && (
         <XFrames.UnformattedText

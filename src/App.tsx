@@ -5,6 +5,7 @@ import { ConsoleView } from "./panels/ConsoleView";
 import { MessageView } from "./panels/MessageView";
 import { NavigationStatus } from "./panels/NavigationStatus";
 import { MapPanel } from "./panels/MapPanel";
+import { SkyViewPanel } from "./panels/SkyViewPanel";
 
 export const App = () => (
   <XFrames.Node root style={{ height: "100%", padding: { all: 8 } }}>
@@ -27,6 +28,9 @@ export const App = () => (
       </XFrames.TabItem>
       <XFrames.TabItem label="Map" style={{ flex: 1, width: "100%" }}>
         <MapPanel />
+      </XFrames.TabItem>
+      <XFrames.TabItem label="Sky View" style={{ flex: 1, width: "100%" }}>
+        <SkyViewPanel />
       </XFrames.TabItem>
     </XFrames.TabBar>
   </XFrames.Node>

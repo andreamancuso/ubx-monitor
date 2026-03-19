@@ -39,6 +39,18 @@ function buildCfgValset(keys: { keyId: number; value: number }[]): Buffer {
   return buildUbxFrame(0x06, 0x8a, payload);
 }
 
+function buildCfgRst(navBbrMask: number): Buffer {
+  const payload = Buffer.alloc(4);
+  payload.writeUInt16LE(navBbrMask, 0);
+  payload[2] = 0x02; // resetMode: GNSS software reset
+  payload[3] = 0x00; // reserved
+  return buildUbxFrame(0x06, 0x04, payload);
+}
+
+export function coldStart(): Buffer { return buildCfgRst(0xffff); }
+export function warmStart(): Buffer { return buildCfgRst(0x0001); }
+export function hotStart(): Buffer { return buildCfgRst(0x0000); }
+
 export function enableUbxNavMessages(): Buffer {
   return buildCfgValset([
     { keyId: 0x20910007, value: 1 }, // CFG-MSGOUT-UBX_NAV_PVT_UART1

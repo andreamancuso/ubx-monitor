@@ -42,5 +42,9 @@ export function useSerialConnection() {
     serialManager.enableUbxOutput();
   }, []);
 
-  return { ports, status, error, connect, disconnect, refreshPorts, enableUbxOutput };
+  const coldStart = useCallback(() => { serialManager.coldStart(); }, []);
+  const warmStart = useCallback(() => { serialManager.warmStart(); }, []);
+  const hotStart = useCallback(() => { serialManager.hotStart(); }, []);
+
+  return { ports, status, error, connect, disconnect, refreshPorts, enableUbxOutput, coldStart, warmStart, hotStart };
 }

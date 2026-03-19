@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { SerialPort } from "serialport";
 import { UbxParser } from "ubx-parser";
 import type { ConnectionStatus, SerialPortInfo } from "./types";
-import { enableUbxNavMessages } from "./ubx-commands";
+import { enableUbxNavMessages, coldStart, warmStart, hotStart } from "./ubx-commands";
 
 class SerialManager extends EventEmitter {
   private port: SerialPort | null = null;
@@ -69,6 +69,10 @@ class SerialManager extends EventEmitter {
       this.emit("message", msg);
     });
 
+    this.parser.on("NAV-SAT", (msg) => {
+      this.emit("NAV-SAT", msg);
+    });
+
     this.port.on("close", () => {
       this.status = "disconnected";
       this.emit("status", this.status);
@@ -100,6 +104,10 @@ class SerialManager extends EventEmitter {
   enableUbxOutput(): void {
     this.sendRaw(enableUbxNavMessages());
   }
+
+  coldStart(): void { this.sendRaw(coldStart()); }
+  warmStart(): void { this.sendRaw(warmStart()); }
+  hotStart(): void { this.sendRaw(hotStart()); }
 
   getStatus(): ConnectionStatus {
     return this.status;
