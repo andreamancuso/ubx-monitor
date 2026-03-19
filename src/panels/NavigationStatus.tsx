@@ -2,6 +2,7 @@ import * as React from "react";
 import { XFrames } from "@xframes/node";
 import { useNavPvt } from "../hooks/useNavPvt";
 import { useNavStatus } from "../hooks/useNavStatus";
+import { useNavDop } from "../hooks/useNavDop";
 
 const FIX_TYPES: Record<number, string> = {
   0: "No Fix",
@@ -64,6 +65,12 @@ const SPOOF_COLORS: Record<number, string> = {
   3: "#e74c3c",
 };
 
+function dopColor(val: number): string {
+  if (val < 2) return "#2ecc71";   // excellent
+  if (val <= 5) return "#f1c40f";  // moderate
+  return "#e74c3c";                // poor
+}
+
 function formatUptime(ms: number): string {
   const totalSec = Math.floor(ms / 1000);
   const h = Math.floor(totalSec / 3600);
@@ -76,6 +83,7 @@ function formatUptime(ms: number): string {
 export const NavigationStatus = () => {
   const data = useNavPvt();
   const navStatus = useNavStatus();
+  const dop = useNavDop();
 
   if (!data) {
     return (
@@ -114,6 +122,15 @@ export const NavigationStatus = () => {
             color={SPOOF_COLORS[navStatus.spoofDetState]}
           />
           <LabelRow label="DGPS:" value={navStatus.diffCorr ? "Yes" : "No"} />
+        </>
+      )}
+      {dop && (
+        <>
+          <LabelRow label="PDOP:" value={dop.pDOP.toFixed(1)} color={dopColor(dop.pDOP)} />
+          <LabelRow label="HDOP:" value={dop.hDOP.toFixed(1)} color={dopColor(dop.hDOP)} />
+          <LabelRow label="VDOP:" value={dop.vDOP.toFixed(1)} color={dopColor(dop.vDOP)} />
+          <LabelRow label="GDOP:" value={dop.gDOP.toFixed(1)} color={dopColor(dop.gDOP)} />
+          <LabelRow label="TDOP:" value={dop.tDOP.toFixed(1)} color={dopColor(dop.tDOP)} />
         </>
       )}
     </XFrames.Node>
