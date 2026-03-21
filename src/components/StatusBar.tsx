@@ -35,12 +35,23 @@ const labelStyle = { color: themeColors.lightSlate };
 
 export const StatusBar = () => {
   const { status } = useSerialConnection();
-  const { messageRate, timeSinceLastMessage } = useUbxMessages();
+  const { messageRate, timeSinceLastMessage, bytesPerSec, baudRate } = useUbxMessages();
   const data = useNavPvt();
 
   const fixLabel = data ? (FIX_TYPES[data.fixType] ?? `Unknown (${data.fixType})`) : "\u2014";
   const fixColor = data ? (FIX_COLORS[data.fixType] ?? themeColors.lightSlate) : themeColors.lightSlate;
   const satCount = data?.numSV ?? 0;
+
+  const isStale = status === "connected" && timeSinceLastMessage > 3;
+
+  // Bandwidth utilization
+  const maxBytesPerSec = baudRate ? baudRate / 10 : 0;
+  const utilization = maxBytesPerSec > 0 ? bytesPerSec / maxBytesPerSec : 0;
+  const utilizationPct = Math.min(Math.round(utilization * 100), 100);
+  const kbPerSec = (bytesPerSec / 1024).toFixed(1);
+  const fraction = Math.min(utilization, 1.0);
+
+  const bwColor = utilizationPct > 90 ? "#e74c3c" : utilizationPct > 70 ? "#e67e22" : themeColors.lightSlate;
 
   return (
     <XFrames.Node
@@ -62,13 +73,22 @@ export const StatusBar = () => {
       <XFrames.UnformattedText text="\u2502" style={dividerStyle} />
 
       <XFrames.UnformattedText
-        text={status === "connected" && timeSinceLastMessage > 3
+        text={isStale
           ? `${messageRate} msg/s (stale ${timeSinceLastMessage}s)`
           : `${messageRate} msg/s`}
-        style={status === "connected" && timeSinceLastMessage > 3
-          ? { color: "#e67e22" }
-          : labelStyle}
+        style={isStale ? { color: "#e67e22" } : labelStyle}
       />
+
+      {status === "connected" && baudRate && (
+        <>
+          <XFrames.UnformattedText text="\u2502" style={dividerStyle} />
+          <XFrames.UnformattedText
+            text={`${kbPerSec} KB/s (${utilizationPct}%)`}
+            style={{ color: bwColor }}
+          />
+          <XFrames.ProgressBar fraction={fraction} style={{ width: 80, height: 14 }} />
+        </>
+      )}
 
       <XFrames.UnformattedText text="\u2502" style={dividerStyle} />
 

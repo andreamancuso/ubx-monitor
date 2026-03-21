@@ -37,6 +37,7 @@ class SerialManager extends EventEmitter {
 
     this.status = "connecting";
     this.emit("status", this.status);
+    this.emit("baudrate", baudRate);
 
     this.port = new SerialPort({ path, baudRate }, (err) => {
       if (err) {
@@ -67,6 +68,11 @@ class SerialManager extends EventEmitter {
     this.parser = null;
     this.status = "disconnected";
     this.emit("status", this.status);
+    this.emit("baudrate", null);
+  }
+
+  getBaudRate(): number | null {
+    return this.lastBaudRate;
   }
 
   sendRaw(data: Buffer): void {
