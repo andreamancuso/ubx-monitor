@@ -9,6 +9,7 @@ import { PositionTrackingPanel } from "./panels/PositionTrackingPanel";
 import { SkyViewPanel } from "./panels/SkyViewPanel";
 import { SignalStrengthPanel } from "./panels/SignalStrengthPanel";
 import { HardwareStatusPanel } from "./panels/HardwareStatusPanel";
+import { StatusBar } from "./components/StatusBar";
 
 export const App = () => (
   <XFrames.Node root style={{ height: "100%", padding: { all: 8 } }}>
@@ -45,5 +46,6 @@ export const App = () => (
         <HardwareStatusPanel />
       </XFrames.TabItem>
     </XFrames.TabBar>
+    <StatusBar />
   </XFrames.Node>
 );

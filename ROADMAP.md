@@ -16,7 +16,7 @@
 ### Phase 1: Consistency & Foundation
 
 1. ~~**Standardize no-data states**~~ — Done. Console shows "No data received", Map shows "Awaiting fix..." above tiles until 2D+ fix. Sky View kept as-is (polar grid is a good empty state).
-2. **Status bar** — Bottom bar on all tabs: connection state (colored dot), message rate (msg/s), fix type badge, satellite count. Uses existing hooks.
+2. ~~**Status bar**~~ — Done. Bottom bar with connection dot, message rate, fix type (color-coded), satellite count. Visible on all tabs.
 3. **Theme-aware disabled states** — Replace hardcoded `disabledComboStyle` in ConnectionPanel with theme-derived colors. Audit all panels for hardcoded colors.
 4. **Consistent section headers** — Extract reusable `SectionHeader` component. Apply to Navigation (Position/Time/DOP/Status), Position Tracking stats, etc.
 5. **Font & spacing audit** — Standardize font sizes (16 body, 18 section headers, 24 title). Normalize gap/padding across panels.
