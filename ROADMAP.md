@@ -26,7 +26,7 @@
 6. ~~**Remember last connection**~~ — Done. Persists port path + baud rate to `./config.json`. Auto-selects on launch; falls back to first available if saved port is gone.
 7. ~~**Port detail display**~~ — Done. Port dropdown already shows "COM3 (u-blox AG)" when manufacturer metadata is available.
 8. ~~**Auto-reconnect**~~ — Done. On unexpected disconnect, retries every 2s (max 5 attempts) with "Reconnecting (N/5)..." state. Cancel button to abort. Intentional disconnects do not trigger reconnect.
-9. **Connection quality indicator** — Message rate + time since last message in status bar. Amber warning if no messages for >3s while connected.
+9. ~~**Connection quality indicator**~~ — Done. Message rate in status bar turns amber with "(stale Ns)" when no messages for >3s while connected. Resets on disconnect and on message resumption.
 
 ### Phase 3: Panel Polish
 

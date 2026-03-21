@@ -35,7 +35,7 @@ const labelStyle = { color: themeColors.lightSlate };
 
 export const StatusBar = () => {
   const { status } = useSerialConnection();
-  const { messageRate } = useUbxMessages();
+  const { messageRate, timeSinceLastMessage } = useUbxMessages();
   const data = useNavPvt();
 
   const fixLabel = data ? (FIX_TYPES[data.fixType] ?? `Unknown (${data.fixType})`) : "\u2014";
@@ -61,7 +61,14 @@ export const StatusBar = () => {
 
       <XFrames.UnformattedText text="\u2502" style={dividerStyle} />
 
-      <XFrames.UnformattedText text={`${messageRate} msg/s`} style={labelStyle} />
+      <XFrames.UnformattedText
+        text={status === "connected" && timeSinceLastMessage > 3
+          ? `${messageRate} msg/s (stale ${timeSinceLastMessage}s)`
+          : `${messageRate} msg/s`}
+        style={status === "connected" && timeSinceLastMessage > 3
+          ? { color: "#e67e22" }
+          : labelStyle}
+      />
 
       <XFrames.UnformattedText text="\u2502" style={dividerStyle} />
 
