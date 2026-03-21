@@ -3,13 +3,13 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { XFrames } from "@xframes/node";
 import { ComboChangeEvent } from "@xframes/common";
 import { useSerialConnection } from "../hooks/useSerialConnection";
-import { loadConfig, saveConfig } from "../connection/config";
+import { getConfig, updateConfig } from "../connection/config";
 import { themeColors } from "../themes";
 
 const BAUD_RATES = ["9600", "38400", "115200", "921600"];
 const DEFAULT_BAUD_INDEX = 1; // 38400
 
-const savedConfig = loadConfig();
+const savedConfig = getConfig();
 
 const statusColors: Record<string, string> = {
   disconnected: "#e74c3c",
@@ -65,7 +65,7 @@ export const ConnectionPanel = () => {
     } else if (ports.length > 0) {
       const port = ports[selectedPortIndex];
       const baudRate = parseInt(BAUD_RATES[selectedBaudIndex], 10);
-      saveConfig({ portPath: port.path, baudRate });
+      updateConfig({ portPath: port.path, baudRate });
       connect(port.path, baudRate);
     }
   }, [isConnected, ports, selectedPortIndex, selectedBaudIndex, connect, disconnect]);

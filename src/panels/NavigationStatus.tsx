@@ -1,10 +1,12 @@
 import * as React from "react";
 import { XFrames } from "@xframes/node";
+import { ComboChangeEvent } from "@xframes/common";
 import { useNavPvt } from "../hooks/useNavPvt";
 import { useNavStatus } from "../hooks/useNavStatus";
 import { useNavDop } from "../hooks/useNavDop";
 import { themeColors } from "../themes";
 import { LabelRow } from "../components/LabelRow";
+import { getConfig, updateConfig } from "../connection/config";
 
 const FIX_TYPES: Record<number, string> = {
   0: "No Fix",
@@ -24,8 +26,40 @@ const FIX_COLORS: Record<number, string> = {
   5: "#3498db",
 };
 
-function formatCoord(deg: number): string {
-  return deg.toFixed(7);
+const COORD_FORMATS = ["DD", "DMS", "DDM"];
+
+function formatDD(deg: number): string {
+  return `${deg.toFixed(7)}\u00B0`;
+}
+
+function formatDMS(deg: number, isLat: boolean): string {
+  const abs = Math.abs(deg);
+  const d = Math.floor(abs);
+  const minFloat = (abs - d) * 60;
+  const m = Math.floor(minFloat);
+  const s = ((minFloat - m) * 60).toFixed(2);
+  const dir = isLat ? (deg >= 0 ? "N" : "S") : (deg >= 0 ? "E" : "W");
+  return `${d}\u00B0 ${m}' ${s}" ${dir}`;
+}
+
+function formatDDM(deg: number, isLat: boolean): string {
+  const abs = Math.abs(deg);
+  const d = Math.floor(abs);
+  const m = ((abs - d) * 60).toFixed(5);
+  const dir = isLat ? (deg >= 0 ? "N" : "S") : (deg >= 0 ? "E" : "W");
+  return `${d}\u00B0 ${m}' ${dir}`;
+}
+
+function formatLat(deg: number, fmt: number): string {
+  if (fmt === 1) return formatDMS(deg, true);
+  if (fmt === 2) return formatDDM(deg, true);
+  return formatDD(deg);
+}
+
+function formatLon(deg: number, fmt: number): string {
+  if (fmt === 1) return formatDMS(deg, false);
+  if (fmt === 2) return formatDDM(deg, false);
+  return formatDD(deg);
 }
 
 function formatMeters(mm: number): string {
@@ -74,6 +108,13 @@ export const NavigationStatus = () => {
   const data = useNavPvt();
   const navStatus = useNavStatus();
   const dop = useNavDop();
+  const [coordFormat, setCoordFormat] = React.useState(getConfig().coordFormat ?? 0);
+
+  const handleCoordFormatChange = React.useCallback((e: ComboChangeEvent) => {
+    const idx = e.nativeEvent.value;
+    setCoordFormat(idx);
+    updateConfig({ coordFormat: idx });
+  }, []);
 
   if (!data) {
     return (
@@ -92,9 +133,18 @@ export const NavigationStatus = () => {
 
   return (
     <XFrames.Node style={{ padding: { all: 8 }, gap: { row: 4 } }}>
+      <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, height: 22, alignItems: "center" }}>
+        <XFrames.UnformattedText text="Coord:" style={{ width: 100, color: themeColors.lightSlate }} />
+        <XFrames.Combo
+          options={COORD_FORMATS}
+          initialSelectedIndex={coordFormat}
+          onChange={handleCoordFormatChange}
+          style={{ width: 100 }}
+        />
+      </XFrames.Node>
       <LabelRow label="Fix:" value={fixLabel} color={fixColor} />
-      <LabelRow label="Latitude:" value={`${formatCoord(data.lat)}\u00B0`} />
-      <LabelRow label="Longitude:" value={`${formatCoord(data.lon)}\u00B0`} />
+      <LabelRow label="Latitude:" value={formatLat(data.lat, coordFormat)} />
+      <LabelRow label="Longitude:" value={formatLon(data.lon, coordFormat)} />
       <LabelRow label="Altitude:" value={`${formatAlt(data.hMSL)} m (MSL)`} />
       <LabelRow label="H Accuracy:" value={`${formatMeters(data.hAcc)} m`} />
       <LabelRow label="V Accuracy:" value={`${formatMeters(data.vAcc)} m`} />

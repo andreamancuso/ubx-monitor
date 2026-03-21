@@ -31,7 +31,7 @@
 ### Phase 3: Panel Polish
 
 10. ~~**Navigation: formatting**~~ — Done. Uptime/TTFF as "Xh Ym Zs", degree symbol (already present), DGPS color-coded green/gray.
-11. **Navigation: coordinate format toggle** — Combo to switch DD / DMS / DDM. Persist choice.
+11. ~~**Navigation: coordinate format toggle**~~ — Done. Combo dropdown (DD/DMS/DDM) with config.json persistence.
 12. **Map: awaiting fix overlay + zoom display** — "Awaiting fix..." before first fix. Zoom level and center lat/lon in corner.
 13. **Position Tracking: reset button** — Manual reset button, prominent sample count + elapsed time, horizontal accuracy plot.
 14. **Signal Strength: aggregate stats** — Summary line: "24 sats, 18 used — Mean CNO: 34.2 dB-Hz". Constellation breakdown.
