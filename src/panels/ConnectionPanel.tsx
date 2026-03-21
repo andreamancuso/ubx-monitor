@@ -1,12 +1,15 @@
 import * as React from "react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { XFrames } from "@xframes/node";
 import { ComboChangeEvent } from "@xframes/common";
 import { useSerialConnection } from "../hooks/useSerialConnection";
+import { loadConfig, saveConfig } from "../connection/config";
 import { themeColors } from "../themes";
 
 const BAUD_RATES = ["9600", "38400", "115200", "921600"];
 const DEFAULT_BAUD_INDEX = 1; // 38400
+
+const savedConfig = loadConfig();
 
 const statusColors: Record<string, string> = {
   disconnected: "#e74c3c",
@@ -23,8 +26,23 @@ const disabledComboStyle = {
 export const ConnectionPanel = () => {
   const { ports, status, error, connect, disconnect, refreshPorts, enableUbxOutput, coldStart, warmStart, hotStart } =
     useSerialConnection();
+  const savedBaudIndex = savedConfig.baudRate
+    ? BAUD_RATES.indexOf(String(savedConfig.baudRate))
+    : -1;
   const [selectedPortIndex, setSelectedPortIndex] = useState(0);
-  const [selectedBaudIndex, setSelectedBaudIndex] = useState(DEFAULT_BAUD_INDEX);
+  const [selectedBaudIndex, setSelectedBaudIndex] = useState(
+    savedBaudIndex >= 0 ? savedBaudIndex : DEFAULT_BAUD_INDEX
+  );
+
+  const configApplied = useRef(false);
+  useEffect(() => {
+    if (configApplied.current || ports.length === 0 || !savedConfig.portPath) return;
+    configApplied.current = true;
+    const idx = ports.findIndex((p) => p.path === savedConfig.portPath);
+    if (idx >= 0) {
+      setSelectedPortIndex(idx);
+    }
+  }, [ports]);
 
   const isConnected = status === "connected" || status === "connecting";
 
@@ -46,6 +64,7 @@ export const ConnectionPanel = () => {
     } else if (ports.length > 0) {
       const port = ports[selectedPortIndex];
       const baudRate = parseInt(BAUD_RATES[selectedBaudIndex], 10);
+      saveConfig({ portPath: port.path, baudRate });
       connect(port.path, baudRate);
     }
   }, [isConnected, ports, selectedPortIndex, selectedBaudIndex, connect, disconnect]);
@@ -56,7 +75,7 @@ export const ConnectionPanel = () => {
         <XFrames.UnformattedText text="Port:" />
         <XFrames.Combo
           options={portOptions}
-          initialSelectedIndex={0}
+          initialSelectedIndex={selectedPortIndex}
           onChange={isConnected ? undefined : handlePortChange}
           style={isConnected ? disabledComboStyle : { width: 250 }}
         />
@@ -69,7 +88,7 @@ export const ConnectionPanel = () => {
         <XFrames.UnformattedText text="Baud:" />
         <XFrames.Combo
           options={BAUD_RATES}
-          initialSelectedIndex={DEFAULT_BAUD_INDEX}
+          initialSelectedIndex={selectedBaudIndex}
           onChange={isConnected ? undefined : handleBaudChange}
           style={isConnected
             ? { ...disabledComboStyle, width: 150 }
