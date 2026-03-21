@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { XFrames } from "@xframes/node";
 import { ClippedMultiLineTextRendererImperativeHandle } from "@xframes/common";
 import { serialManager } from "../connection";
@@ -31,9 +31,11 @@ function formatHexDump(chunk: Buffer, offset: number): string {
 export const ConsoleView = () => {
   const textRef = useRef<ClippedMultiLineTextRendererImperativeHandle>(null);
   const offsetRef = useRef(0);
+  const [hasData, setHasData] = useState(false);
 
   useEffect(() => {
     const onRawData = (chunk: Buffer) => {
+      if (!hasData) setHasData(true);
       if (textRef.current) {
         textRef.current.appendTextToClippedMultiLineTextRenderer(
           formatHexDump(chunk, offsetRef.current),
@@ -46,7 +48,18 @@ export const ConsoleView = () => {
     return () => {
       serialManager.off("rawdata", onRawData);
     };
-  }, []);
+  }, [hasData]);
+
+  if (!hasData) {
+    return (
+      <XFrames.Node style={{ padding: { all: 8 } }}>
+        <XFrames.UnformattedText
+          text="No data received"
+          style={{ color: "#7a7b9a" }}
+        />
+      </XFrames.Node>
+    );
+  }
 
   return (
     <XFrames.Node style={{ padding: { all: 8 }, flex: 1 }}>

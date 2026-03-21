@@ -57,12 +57,22 @@ export const MapPanel = () => {
   }, [data]);
 
   return (
-    <XFrames.MapView
-      ref={mapRef}
-      style={{ flex: 1, width: "100%" }}
-      minZoom={3}
-      maxZoom={18}
-      cachePath="./tile_cache"
-    />
+    <XFrames.Node style={{ flex: 1 }}>
+      {(!data || data.fixType < 2) && (
+        <XFrames.Node style={{ padding: { all: 8 } }}>
+          <XFrames.UnformattedText
+            text="Awaiting fix\u2026"
+            style={{ color: "#7a7b9a" }}
+          />
+        </XFrames.Node>
+      )}
+      <XFrames.MapView
+        ref={mapRef}
+        style={{ flex: 1, width: "100%" }}
+        minZoom={3}
+        maxZoom={18}
+        cachePath="./tile_cache"
+      />
+    </XFrames.Node>
   );
 };
