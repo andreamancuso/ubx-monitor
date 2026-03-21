@@ -3,6 +3,7 @@ import { XFrames } from "@xframes/node";
 import { useNavPvt } from "../hooks/useNavPvt";
 import { useNavStatus } from "../hooks/useNavStatus";
 import { useNavDop } from "../hooks/useNavDop";
+import { themeColors } from "../themes";
 
 const FIX_TYPES: Record<number, string> = {
   0: "No Fix",
@@ -42,7 +43,7 @@ const LabelRow = ({ label, value, color }: { label: string; value: string; color
   <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, height: 22 }}>
     <XFrames.UnformattedText
       text={label}
-      style={{ width: 100, color: "#7a7b9a" }}
+      style={{ width: 100, color: themeColors.lightSlate }}
     />
     <XFrames.UnformattedText
       text={value}
@@ -59,7 +60,7 @@ const SPOOF_LABELS: Record<number, string> = {
 };
 
 const SPOOF_COLORS: Record<number, string> = {
-  0: "#7a7b9a",
+  0: themeColors.lightSlate,
   1: "#2ecc71",
   2: "#f1c40f",
   3: "#e74c3c",
@@ -90,14 +91,14 @@ export const NavigationStatus = () => {
       <XFrames.Node style={{ padding: { all: 8 } }}>
         <XFrames.UnformattedText
           text="No data \u2014 connect to a receiver"
-          style={{ color: "#7a7b9a" }}
+          style={{ color: themeColors.lightSlate }}
         />
       </XFrames.Node>
     );
   }
 
   const fixLabel = FIX_TYPES[data.fixType] ?? `Unknown (${data.fixType})`;
-  const fixColor = FIX_COLORS[data.fixType] ?? "#7a7b9a";
+  const fixColor = FIX_COLORS[data.fixType] ?? themeColors.lightSlate;
   const utc = `${data.year}-${pad2(data.month)}-${pad2(data.day)} ${pad2(data.hour)}:${pad2(data.min)}:${pad2(data.sec)}`;
 
   return (

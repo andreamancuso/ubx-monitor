@@ -1,6 +1,8 @@
 import * as React from "react";
 import { XFrames } from "@xframes/node";
 import { useRfStatus, useHwStatus } from "../hooks/useMonHw";
+import { themeColors } from "../themes";
+import { SectionHeader } from "../components/SectionHeader";
 
 const ANTENNA_STATUS: Record<number, string> = {
   0: "Init",
@@ -11,8 +13,8 @@ const ANTENNA_STATUS: Record<number, string> = {
 };
 
 const ANTENNA_COLORS: Record<number, string> = {
-  0: "#7a7b9a",
-  1: "#7a7b9a",
+  0: themeColors.lightSlate,
+  1: themeColors.lightSlate,
   2: "#2ecc71",
   3: "#e74c3c",
   4: "#e74c3c",
@@ -32,7 +34,7 @@ const JAMMING_STATE: Record<number, string> = {
 };
 
 const JAMMING_COLORS: Record<number, string> = {
-  0: "#7a7b9a",
+  0: themeColors.lightSlate,
   1: "#2ecc71",
   2: "#f1c40f",
   3: "#e74c3c",
@@ -48,20 +50,13 @@ const LabelRow = ({ label, value, color }: { label: string; value: string; color
   <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, height: 22 }}>
     <XFrames.UnformattedText
       text={label}
-      style={{ width: 100, color: "#7a7b9a" }}
+      style={{ width: 100, color: themeColors.lightSlate }}
     />
     <XFrames.UnformattedText
       text={value}
       style={color ? { color } : undefined}
     />
   </XFrames.Node>
-);
-
-const SectionHeader = ({ text }: { text: string }) => (
-  <XFrames.UnformattedText
-    text={text}
-    style={{ color: "#ffffff", font: { name: "roboto-regular", size: 18 } }}
-  />
 );
 
 export const HardwareStatusPanel = () => {
@@ -73,7 +68,7 @@ export const HardwareStatusPanel = () => {
       <XFrames.Node style={{ padding: { all: 8 } }}>
         <XFrames.UnformattedText
           text="No data \u2014 connect to a receiver"
-          style={{ color: "#7a7b9a" }}
+          style={{ color: themeColors.lightSlate }}
         />
       </XFrames.Node>
     );

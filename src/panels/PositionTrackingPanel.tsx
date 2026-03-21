@@ -6,6 +6,8 @@ import type {
   PlotLineImperativeHandle,
 } from "@xframes/common";
 import { usePositionHistory } from "../hooks/usePositionHistory";
+import { themeColors } from "../themes";
+import { SectionHeader } from "../components/SectionHeader";
 
 export const PositionTrackingPanel = () => {
   const scatterRef = useRef<PlotScatterImperativeHandle>(null);
@@ -55,7 +57,7 @@ export const PositionTrackingPanel = () => {
       <XFrames.Node style={{ padding: { all: 8 } }}>
         <XFrames.UnformattedText
           text="No data \u2014 connect to a receiver"
-          style={{ color: "#7a7b9a" }}
+          style={{ color: themeColors.lightSlate }}
         />
       </XFrames.Node>
     );
@@ -86,18 +88,12 @@ export const PositionTrackingPanel = () => {
           style={{ flex: 3 }}
         />
         <XFrames.Node style={{ flex: 1, padding: { all: 8 }, gap: { row: 8 } }}>
-          <XFrames.UnformattedText
-            text="Position Statistics"
-            style={{
-              font: { name: "roboto-regular", size: 18 },
-              color: "#e0e0e0",
-            }}
-          />
+          <SectionHeader text="Position Statistics" />
           <XFrames.UnformattedText
             text={statsText}
             style={{
               font: { name: "roboto-mono", size: 14 },
-              color: "#b0b0c0",
+              color: themeColors.silver,
             }}
           />
         </XFrames.Node>

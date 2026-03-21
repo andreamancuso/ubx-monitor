@@ -17,8 +17,8 @@
 
 1. ~~**Standardize no-data states**~~ — Done. Console shows "No data received", Map shows "Awaiting fix..." above tiles until 2D+ fix. Sky View kept as-is (polar grid is a good empty state).
 2. ~~**Status bar**~~ — Done. Bottom bar with connection dot, message rate, fix type (color-coded), satellite count. Visible on all tabs.
-3. **Theme-aware disabled states** — Replace hardcoded `disabledComboStyle` in ConnectionPanel with theme-derived colors. Audit all panels for hardcoded colors.
-4. **Consistent section headers** — Extract reusable `SectionHeader` component. Apply to Navigation (Position/Time/DOP/Status), Position Tracking stats, etc.
+3. ~~**Theme-aware disabled states**~~ — Done. All 8 files now import `themeColors` instead of hardcoding hex values. 25 occurrences replaced.
+4. ~~**Consistent section headers**~~ — Done. Shared `SectionHeader` component in `components/`. Used by HardwareStatusPanel and PositionTrackingPanel.
 5. **Font & spacing audit** — Standardize font sizes (16 body, 18 section headers, 24 title). Normalize gap/padding across panels.
 
 ### Phase 2: Connection Experience

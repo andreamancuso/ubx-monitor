@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react";
 import { XFrames } from "@xframes/node";
 import type { MapImperativeHandle } from "@xframes/common";
 import { useNavPvt } from "../hooks/useNavPvt";
+import { themeColors } from "../themes";
 
 const FIX_COLORS: Record<number, string> = {
   0: "#e74c3c",
@@ -35,7 +36,7 @@ export const MapPanel = () => {
       hasCentered.current = true;
     }
 
-    const color = FIX_COLORS[data.fixType] ?? "#7a7b9a";
+    const color = FIX_COLORS[data.fixType] ?? themeColors.lightSlate;
 
     mapRef.current.setMarkers([
       { lat: data.lat, lon: data.lon, color, label: "Position", radius: 8 },
@@ -62,7 +63,7 @@ export const MapPanel = () => {
         <XFrames.Node style={{ padding: { all: 8 } }}>
           <XFrames.UnformattedText
             text="Awaiting fix\u2026"
-            style={{ color: "#7a7b9a" }}
+            style={{ color: themeColors.lightSlate }}
           />
         </XFrames.Node>
       )}

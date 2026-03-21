@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react";
 import { XFrames } from "@xframes/node";
 import { PlotBarImperativeHandle } from "@xframes/common";
 import { useNavSat, SatInfo } from "../hooks/useNavSat";
+import { themeColors } from "../themes";
 
 const GNSS_PREFIX: Record<number, string> = {
   0: "G",   // GPS
@@ -65,7 +66,7 @@ export const SignalStrengthPanel = () => {
       <XFrames.Node style={{ padding: { all: 8 } }}>
         <XFrames.UnformattedText
           text="No data \u2014 connect to a receiver"
-          style={{ color: "#7a7b9a" }}
+          style={{ color: themeColors.lightSlate }}
         />
       </XFrames.Node>
     );

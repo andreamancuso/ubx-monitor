@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import { XFrames } from "@xframes/node";
 import { ComboChangeEvent } from "@xframes/common";
 import { useSerialConnection } from "../hooks/useSerialConnection";
+import { themeColors } from "../themes";
 
 const BAUD_RATES = ["9600", "38400", "115200", "921600"];
 const DEFAULT_BAUD_INDEX = 1; // 38400
@@ -15,8 +16,8 @@ const statusColors: Record<string, string> = {
 
 const disabledComboStyle = {
   width: 250,
-  color: "#4a4b6a",
-  backgroundColor: "#1a1b2e",
+  color: themeColors.slate,
+  backgroundColor: themeColors.deepNavy,
 };
 
 export const ConnectionPanel = () => {

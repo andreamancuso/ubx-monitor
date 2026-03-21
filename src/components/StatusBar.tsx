@@ -3,6 +3,7 @@ import { XFrames } from "@xframes/node";
 import { useSerialConnection } from "../hooks/useSerialConnection";
 import { useUbxMessages } from "../hooks/useUbxMessages";
 import { useNavPvt } from "../hooks/useNavPvt";
+import { themeColors } from "../themes";
 
 const STATUS_COLORS: Record<string, string> = {
   disconnected: "#e74c3c",
@@ -28,8 +29,8 @@ const FIX_COLORS: Record<number, string> = {
   5: "#3498db",
 };
 
-const dividerStyle = { color: "#4a4b6a" };
-const labelStyle = { color: "#7a7b9a" };
+const dividerStyle = { color: themeColors.slate };
+const labelStyle = { color: themeColors.lightSlate };
 
 export const StatusBar = () => {
   const { status } = useSerialConnection();
@@ -37,7 +38,7 @@ export const StatusBar = () => {
   const data = useNavPvt();
 
   const fixLabel = data ? (FIX_TYPES[data.fixType] ?? `Unknown (${data.fixType})`) : "\u2014";
-  const fixColor = data ? (FIX_COLORS[data.fixType] ?? "#7a7b9a") : "#7a7b9a";
+  const fixColor = data ? (FIX_COLORS[data.fixType] ?? themeColors.lightSlate) : themeColors.lightSlate;
   const satCount = data?.numSV ?? 0;
 
   return (
@@ -51,7 +52,7 @@ export const StatusBar = () => {
       }}
     >
       <XFrames.ColorIndicator
-        color={STATUS_COLORS[status] ?? "#7a7b9a"}
+        color={STATUS_COLORS[status] ?? themeColors.lightSlate}
         shape="circle"
         style={{ width: 12, height: 12 }}
       />

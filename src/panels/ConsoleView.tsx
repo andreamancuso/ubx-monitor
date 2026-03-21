@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { XFrames } from "@xframes/node";
 import { ClippedMultiLineTextRendererImperativeHandle } from "@xframes/common";
 import { serialManager } from "../connection";
+import { themeColors } from "../themes";
 
 function formatHexDump(chunk: Buffer, offset: number): string {
   let result = "";
@@ -55,7 +56,7 @@ export const ConsoleView = () => {
       <XFrames.Node style={{ padding: { all: 8 } }}>
         <XFrames.UnformattedText
           text="No data received"
-          style={{ color: "#7a7b9a" }}
+          style={{ color: themeColors.lightSlate }}
         />
       </XFrames.Node>
     );
