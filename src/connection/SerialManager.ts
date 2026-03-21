@@ -62,6 +62,17 @@ class SerialManager extends EventEmitter {
     });
 
     this.parser.on("MON-HW", (msg) => {
+      this.emit("MON-HW", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser.on("MON-HW3", (msg) => {
+      this.emit("MON-HW3", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser.on("MON-RF", (msg) => {
+      this.emit("MON-RF", msg);
       this.emit("message", msg);
     });
 

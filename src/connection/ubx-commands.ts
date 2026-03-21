@@ -57,6 +57,8 @@ export function enableUbxNavMessages(): Buffer {
     { keyId: 0x20910016, value: 1 }, // CFG-MSGOUT-UBX_NAV_SAT_UART1
     { keyId: 0x20910039, value: 1 }, // CFG-MSGOUT-UBX_NAV_DOP_UART1
     { keyId: 0x209101b5, value: 1 }, // CFG-MSGOUT-UBX_MON_HW_UART1
+    { keyId: 0x20910355, value: 1 }, // CFG-MSGOUT-UBX_MON_HW3_UART1
+    { keyId: 0x2091035a, value: 1 }, // CFG-MSGOUT-UBX_MON_RF_UART1
     { keyId: 0x2091001b, value: 1 }, // CFG-MSGOUT-UBX_NAV_STATUS_UART1
   ]);
 }

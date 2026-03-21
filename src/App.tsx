@@ -8,6 +8,7 @@ import { MapPanel } from "./panels/MapPanel";
 import { PositionTrackingPanel } from "./panels/PositionTrackingPanel";
 import { SkyViewPanel } from "./panels/SkyViewPanel";
 import { SignalStrengthPanel } from "./panels/SignalStrengthPanel";
+import { HardwareStatusPanel } from "./panels/HardwareStatusPanel";
 
 export const App = () => (
   <XFrames.Node root style={{ height: "100%", padding: { all: 8 } }}>
@@ -39,6 +40,9 @@ export const App = () => (
       </XFrames.TabItem>
       <XFrames.TabItem label="Signals" style={{ flex: 1, width: "100%" }}>
         <SignalStrengthPanel />
+      </XFrames.TabItem>
+      <XFrames.TabItem label="Hardware" style={{ flex: 1, width: "100%" }}>
+        <HardwareStatusPanel />
       </XFrames.TabItem>
     </XFrames.TabBar>
   </XFrames.Node>
