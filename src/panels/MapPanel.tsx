@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { XFrames } from "@xframes/node";
 import type { MapImperativeHandle } from "@xframes/common";
 import { useNavPvt } from "../hooks/useNavPvt";
@@ -14,11 +14,18 @@ const FIX_COLORS: Record<number, string> = {
   5: "#3498db",
 };
 
+const formatCoord = (lat: number, lon: number) => {
+  const latDir = lat >= 0 ? "N" : "S";
+  const lonDir = lon >= 0 ? "E" : "W";
+  return `${Math.abs(lat).toFixed(4)}\u00b0${latDir}, ${Math.abs(lon).toFixed(4)}\u00b0${lonDir}`;
+};
+
 export const MapPanel = () => {
   const mapRef = useRef<MapImperativeHandle>(null);
   const data = useNavPvt();
   const hasCentered = useRef(false);
   const polylineReady = useRef(false);
+  const [zoom, setZoom] = useState(15);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -59,11 +66,18 @@ export const MapPanel = () => {
 
   return (
     <XFrames.Node style={{ flex: 1 }}>
-      {(!data || data.fixType < 2) && (
+      {(!data || data.fixType < 2) ? (
         <XFrames.Node style={{ padding: { all: 8 } }}>
           <XFrames.UnformattedText
             text="Awaiting fix\u2026"
             style={{ color: themeColors.lightSlate }}
+          />
+        </XFrames.Node>
+      ) : (
+        <XFrames.Node style={{ padding: { left: 8, top: 4, bottom: 4 } }}>
+          <XFrames.UnformattedText
+            text={`Z${zoom} \u00b7 ${formatCoord(data.lat, data.lon)}`}
+            style={{ color: themeColors.lightSlate, font: { name: "roboto-mono", size: 14 } }}
           />
         </XFrames.Node>
       )}
@@ -73,6 +87,7 @@ export const MapPanel = () => {
         minZoom={3}
         maxZoom={18}
         cachePath="./tile_cache"
+        onChange={(e: any) => setZoom(Math.round(e.nativeEvent.value))}
       />
     </XFrames.Node>
   );

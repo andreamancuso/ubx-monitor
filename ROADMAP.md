@@ -32,7 +32,7 @@
 
 10. ~~**Navigation: formatting**~~ — Done. Uptime/TTFF as "Xh Ym Zs", degree symbol (already present), DGPS color-coded green/gray.
 11. ~~**Navigation: coordinate format toggle**~~ — Done. Combo dropdown (DD/DMS/DDM) with config.json persistence.
-12. **Map: awaiting fix overlay + zoom display** — "Awaiting fix..." before first fix. Zoom level and center lat/lon in corner.
+12. ~~**Map: awaiting fix overlay + zoom display**~~ — Done. "Awaiting fix..." before first fix; after fix shows "Z15 · lat°N, lon°W" (zoom from onChange, GPS coords from NAV-PVT).
 13. **Position Tracking: reset button** — Manual reset button, prominent sample count + elapsed time, horizontal accuracy plot.
 14. **Signal Strength: aggregate stats** — Summary line: "24 sats, 18 used — Mean CNO: 34.2 dB-Hz". Constellation breakdown.
 15. **Signal Strength: sort toggle** — Toggle between sort by constellation (default) or by CNO descending.
