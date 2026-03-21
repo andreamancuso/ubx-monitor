@@ -10,8 +10,8 @@
     "start": "tsx ./src/index.tsx"
   },
   "dependencies": {
-    "@xframes/common": "^0.1.3",
-    "@xframes/node": "^0.1.4",
+    "@xframes/common": "^0.1.4",
+    "@xframes/node": "^0.1.5",
     "react": "^18.2.0",
     "serialport": "^12.0.0",
     "ubx-parser": "^0.2.3"

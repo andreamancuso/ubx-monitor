@@ -18,6 +18,20 @@ function satLabel(sat: SatInfo): string {
   return `${prefix}${sat.svid}`;
 }
 
+const SERIES_DEFS = [
+  { label: "Weak (<20)" },
+  { label: "Moderate (20-30)" },
+  { label: "Good (30-40)" },
+  { label: "Excellent (≥40)" },
+];
+
+function cnoSeriesIndex(cno: number): number {
+  if (cno < 20) return 0;
+  if (cno < 30) return 1;
+  if (cno < 40) return 2;
+  return 3;
+}
+
 export const SignalStrengthPanel = () => {
   const satellites = useNavSat();
   const barRef = useRef<PlotBarImperativeHandle>(null);
@@ -29,10 +43,21 @@ export const SignalStrengthPanel = () => {
       .filter((s) => s.cno > 0)
       .sort((a, b) => a.gnssId - b.gnssId || a.svid - b.svid);
 
-    const data = sorted.map((s, i) => ({ x: i, y: s.cno }));
     const labels = sorted.map(satLabel);
 
-    barRef.current.setData(data, labels);
+    const seriesData: { data: { x: number; y: number }[]; tickLabels?: string[] }[] = [
+      { data: [], tickLabels: labels },
+      { data: [] },
+      { data: [] },
+      { data: [] },
+    ];
+
+    sorted.forEach((s, i) => {
+      const idx = cnoSeriesIndex(s.cno);
+      seriesData[idx].data.push({ x: i, y: s.cno });
+    });
+
+    barRef.current.setSeriesData(seriesData);
   }, [satellites]);
 
   if (!satellites) {
@@ -51,7 +76,9 @@ export const SignalStrengthPanel = () => {
       <XFrames.PlotBar
         ref={barRef}
         axisAutoFit
+        showLegend
         yAxisLabel="CNO (dB-Hz)"
+        series={SERIES_DEFS}
         style={{ flex: 1, width: "100%" }}
       />
     </XFrames.Node>
