@@ -65,8 +65,9 @@ function formatUptime(ms: number): string {
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
-  if (h > 0) return `${h}:${pad2(m)}:${pad2(s)}`;
-  return `${m}:${pad2(s)}`;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 
 export const NavigationStatus = () => {
@@ -102,7 +103,7 @@ export const NavigationStatus = () => {
       {navStatus && (
         <>
           {navStatus.ttff > 0 && (
-            <LabelRow label="TTFF:" value={`${(navStatus.ttff / 1000).toFixed(1)}s`} />
+            <LabelRow label="TTFF:" value={formatUptime(navStatus.ttff)} />
           )}
           <LabelRow label="Uptime:" value={formatUptime(navStatus.msss)} />
           <LabelRow
@@ -110,7 +111,7 @@ export const NavigationStatus = () => {
             value={SPOOF_LABELS[navStatus.spoofDetState] ?? `Unknown (${navStatus.spoofDetState})`}
             color={SPOOF_COLORS[navStatus.spoofDetState]}
           />
-          <LabelRow label="DGPS:" value={navStatus.diffCorr ? "Yes" : "No"} />
+          <LabelRow label="DGPS:" value={navStatus.diffCorr ? "Yes" : "No"} color={navStatus.diffCorr ? "#2ecc71" : themeColors.lightSlate} />
         </>
       )}
       {dop && (
