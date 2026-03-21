@@ -3,6 +3,7 @@ import { XFrames } from "@xframes/node";
 import { useRfStatus, useHwStatus } from "../hooks/useMonHw";
 import { themeColors } from "../themes";
 import { SectionHeader } from "../components/SectionHeader";
+import { LabelRow } from "../components/LabelRow";
 
 const ANTENNA_STATUS: Record<number, string> = {
   0: "Init",
@@ -45,19 +46,6 @@ function jamIndColor(val: number): string {
   if (val < 150) return "#f1c40f";
   return "#e74c3c";
 }
-
-const LabelRow = ({ label, value, color }: { label: string; value: string; color?: string }) => (
-  <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, height: 22 }}>
-    <XFrames.UnformattedText
-      text={label}
-      style={{ width: 100, color: themeColors.lightSlate }}
-    />
-    <XFrames.UnformattedText
-      text={value}
-      style={color ? { color } : undefined}
-    />
-  </XFrames.Node>
-);
 
 export const HardwareStatusPanel = () => {
   const rf = useRfStatus();

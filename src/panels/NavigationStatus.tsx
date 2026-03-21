@@ -4,6 +4,7 @@ import { useNavPvt } from "../hooks/useNavPvt";
 import { useNavStatus } from "../hooks/useNavStatus";
 import { useNavDop } from "../hooks/useNavDop";
 import { themeColors } from "../themes";
+import { LabelRow } from "../components/LabelRow";
 
 const FIX_TYPES: Record<number, string> = {
   0: "No Fix",
@@ -38,19 +39,6 @@ function formatAlt(mm: number): string {
 function pad2(n: number): string {
   return n.toString().padStart(2, "0");
 }
-
-const LabelRow = ({ label, value, color }: { label: string; value: string; color?: string }) => (
-  <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, height: 22 }}>
-    <XFrames.UnformattedText
-      text={label}
-      style={{ width: 100, color: themeColors.lightSlate }}
-    />
-    <XFrames.UnformattedText
-      text={value}
-      style={color ? { color } : undefined}
-    />
-  </XFrames.Node>
-);
 
 const SPOOF_LABELS: Record<number, string> = {
   0: "Unknown",

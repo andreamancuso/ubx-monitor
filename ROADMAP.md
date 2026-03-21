@@ -19,7 +19,7 @@
 2. ~~**Status bar**~~ — Done. Bottom bar with connection dot, message rate, fix type (color-coded), satellite count. Visible on all tabs.
 3. ~~**Theme-aware disabled states**~~ — Done. All 8 files now import `themeColors` instead of hardcoding hex values. 25 occurrences replaced.
 4. ~~**Consistent section headers**~~ — Done. Shared `SectionHeader` component in `components/`. Used by HardwareStatusPanel and PositionTrackingPanel.
-5. **Font & spacing audit** — Standardize font sizes (16 body, 18 section headers, 24 title). Normalize gap/padding across panels.
+5. ~~**Font & spacing audit**~~ — Done. Spacing already consistent. Extracted shared `LabelRow` component (was duplicated in NavigationStatus and HardwareStatusPanel).
 
 ### Phase 2: Connection Experience
 
