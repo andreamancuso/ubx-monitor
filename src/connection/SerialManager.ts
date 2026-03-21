@@ -4,10 +4,18 @@ import { UbxParser } from "ubx-parser";
 import type { ConnectionStatus, SerialPortInfo } from "./types";
 import { enableUbxNavMessages, coldStart, warmStart, hotStart } from "./ubx-commands";
 
+const MAX_RECONNECT_ATTEMPTS = 5;
+const RECONNECT_INTERVAL_MS = 2000;
+
 class SerialManager extends EventEmitter {
   private port: SerialPort | null = null;
   private parser: UbxParser | null = null;
   private status: ConnectionStatus = "disconnected";
+  private intentionalDisconnect = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private reconnectAttempt = 0;
+  private lastPath: string | null = null;
+  private lastBaudRate: number | null = null;
 
   async listPorts(): Promise<SerialPortInfo[]> {
     const ports = await SerialPort.list();
@@ -22,6 +30,11 @@ class SerialManager extends EventEmitter {
       this.disconnect();
     }
 
+    this.intentionalDisconnect = false;
+    this.clearReconnect();
+    this.lastPath = path;
+    this.lastBaudRate = baudRate;
+
     this.status = "connecting";
     this.emit("status", this.status);
 
@@ -34,75 +47,19 @@ class SerialManager extends EventEmitter {
         return;
       }
 
+      this.reconnectAttempt = 0;
       this.status = "connected";
       this.emit("status", this.status);
     });
 
     this.parser = new UbxParser();
-
-    this.port.on("data", (chunk: Buffer) => {
-      this.emit("rawdata", chunk);
-      this.parser!.feed(chunk);
-    });
-
-    this.parser.on("message", (msg) => {
-      this.emit("message", msg);
-    });
-
-    this.parser.on("NAV-PVT", (msg) => {
-      this.emit("NAV-PVT", msg);
-    });
-
-    this.parser.on("ACK-ACK", (msg) => {
-      this.emit("message", msg);
-    });
-
-    this.parser.on("ACK-NAK", (msg) => {
-      this.emit("message", msg);
-    });
-
-    this.parser.on("MON-HW", (msg) => {
-      this.emit("MON-HW", msg);
-      this.emit("message", msg);
-    });
-
-    this.parser.on("MON-HW3", (msg) => {
-      this.emit("MON-HW3", msg);
-      this.emit("message", msg);
-    });
-
-    this.parser.on("MON-RF", (msg) => {
-      this.emit("MON-RF", msg);
-      this.emit("message", msg);
-    });
-
-    this.parser.on("NAV-STATUS", (msg) => {
-      this.emit("NAV-STATUS", msg);
-      this.emit("message", msg);
-    });
-
-    this.parser.on("NAV-DOP", (msg) => {
-      this.emit("NAV-DOP", msg);
-      this.emit("message", msg);
-    });
-
-    this.parser.on("NAV-SAT", (msg) => {
-      this.emit("NAV-SAT", msg);
-    });
-
-    this.port.on("close", () => {
-      this.status = "disconnected";
-      this.emit("status", this.status);
-    });
-
-    this.port.on("error", (err) => {
-      this.status = "disconnected";
-      this.emit("status", this.status);
-      this.emit("error", err.message);
-    });
+    this.setupPortListeners();
   }
 
   disconnect(): void {
+    this.intentionalDisconnect = true;
+    this.clearReconnect();
+
     if (this.port && this.port.isOpen) {
       this.port.close();
     }
@@ -128,6 +85,145 @@ class SerialManager extends EventEmitter {
 
   getStatus(): ConnectionStatus {
     return this.status;
+  }
+
+  private setupPortListeners(): void {
+    this.port!.on("data", (chunk: Buffer) => {
+      this.emit("rawdata", chunk);
+      this.parser!.feed(chunk);
+    });
+
+    this.parser!.on("message", (msg) => {
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("NAV-PVT", (msg) => {
+      this.emit("NAV-PVT", msg);
+    });
+
+    this.parser!.on("ACK-ACK", (msg) => {
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("ACK-NAK", (msg) => {
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("MON-HW", (msg) => {
+      this.emit("MON-HW", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("MON-HW3", (msg) => {
+      this.emit("MON-HW3", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("MON-RF", (msg) => {
+      this.emit("MON-RF", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("NAV-STATUS", (msg) => {
+      this.emit("NAV-STATUS", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("NAV-DOP", (msg) => {
+      this.emit("NAV-DOP", msg);
+      this.emit("message", msg);
+    });
+
+    this.parser!.on("NAV-SAT", (msg) => {
+      this.emit("NAV-SAT", msg);
+    });
+
+    this.port!.on("close", () => {
+      if (this.intentionalDisconnect) {
+        this.status = "disconnected";
+        this.emit("status", this.status);
+      } else {
+        this.port = null;
+        this.parser = null;
+        this.startReconnect();
+      }
+    });
+
+    this.port!.on("error", (err) => {
+      this.emit("error", err.message);
+      if (this.intentionalDisconnect) {
+        this.status = "disconnected";
+        this.emit("status", this.status);
+      } else {
+        this.port = null;
+        this.parser = null;
+        this.startReconnect();
+      }
+    });
+  }
+
+  private clearReconnect(): void {
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.reconnectAttempt = 0;
+  }
+
+  private startReconnect(): void {
+    if (this.status === "reconnecting") return;
+    if (!this.lastPath || !this.lastBaudRate) {
+      this.status = "disconnected";
+      this.emit("status", this.status);
+      return;
+    }
+
+    this.status = "reconnecting";
+    this.emit("status", this.status);
+    this.scheduleReconnectAttempt();
+  }
+
+  private scheduleReconnectAttempt(): void {
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      this.reconnectAttempt++;
+
+      if (this.reconnectAttempt > MAX_RECONNECT_ATTEMPTS) {
+        this.status = "disconnected";
+        this.emit("status", this.status);
+        this.emit("error", `Auto-reconnect failed after ${MAX_RECONNECT_ATTEMPTS} attempts`);
+        this.reconnectAttempt = 0;
+        return;
+      }
+
+      this.emit("reconnect_attempt", this.reconnectAttempt);
+      this.attemptReconnect();
+    }, RECONNECT_INTERVAL_MS);
+  }
+
+  private attemptReconnect(): void {
+    if (this.port) {
+      this.port.removeAllListeners();
+      if (this.port.isOpen) this.port.close();
+      this.port = null;
+    }
+    this.parser = null;
+
+    this.port = new SerialPort({ path: this.lastPath!, baudRate: this.lastBaudRate! }, (err) => {
+      if (err) {
+        if (!this.intentionalDisconnect) {
+          this.scheduleReconnectAttempt();
+        }
+        return;
+      }
+
+      this.reconnectAttempt = 0;
+      this.status = "connected";
+      this.emit("status", this.status);
+    });
+
+    this.parser = new UbxParser();
+    this.setupPortListeners();
   }
 }
 

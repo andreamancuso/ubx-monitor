@@ -9,6 +9,7 @@ const STATUS_COLORS: Record<string, string> = {
   disconnected: "#e74c3c",
   connecting: "#f1c40f",
   connected: "#2ecc71",
+  reconnecting: "#e67e22",
 };
 
 const FIX_TYPES: Record<number, string> = {

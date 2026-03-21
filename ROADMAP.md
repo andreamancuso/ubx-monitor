@@ -24,8 +24,8 @@
 ### Phase 2: Connection Experience
 
 6. ~~**Remember last connection**~~ — Done. Persists port path + baud rate to `./config.json`. Auto-selects on launch; falls back to first available if saved port is gone.
-7. **Port detail display** — Show manufacturer and serial number in port dropdown (e.g., "COM3 — u-blox AG"). Already in `listPorts()` metadata.
-8. **Auto-reconnect** — On unexpected disconnect, retry every 2s (max 5 attempts) with "Reconnecting..." state.
+7. ~~**Port detail display**~~ — Done. Port dropdown already shows "COM3 (u-blox AG)" when manufacturer metadata is available.
+8. ~~**Auto-reconnect**~~ — Done. On unexpected disconnect, retries every 2s (max 5 attempts) with "Reconnecting (N/5)..." state. Cancel button to abort. Intentional disconnects do not trigger reconnect.
 9. **Connection quality indicator** — Message rate + time since last message in status bar. Amber warning if no messages for >3s while connected.
 
 ### Phase 3: Panel Polish

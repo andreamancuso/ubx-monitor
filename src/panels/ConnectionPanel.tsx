@@ -15,6 +15,7 @@ const statusColors: Record<string, string> = {
   disconnected: "#e74c3c",
   connecting: "#f1c40f",
   connected: "#2ecc71",
+  reconnecting: "#e67e22",
 };
 
 const disabledComboStyle = {
@@ -24,7 +25,7 @@ const disabledComboStyle = {
 };
 
 export const ConnectionPanel = () => {
-  const { ports, status, error, connect, disconnect, refreshPorts, enableUbxOutput, coldStart, warmStart, hotStart } =
+  const { ports, status, error, reconnectAttempt, connect, disconnect, refreshPorts, enableUbxOutput, coldStart, warmStart, hotStart } =
     useSerialConnection();
   const savedBaudIndex = savedConfig.baudRate
     ? BAUD_RATES.indexOf(String(savedConfig.baudRate))
@@ -44,7 +45,7 @@ export const ConnectionPanel = () => {
     }
   }, [ports]);
 
-  const isConnected = status === "connected" || status === "connecting";
+  const isConnected = status === "connected" || status === "connecting" || status === "reconnecting";
 
   const portOptions = ports.length > 0
     ? ports.map((p) => p.manufacturer ? `${p.path} (${p.manufacturer})` : p.path)
@@ -99,7 +100,7 @@ export const ConnectionPanel = () => {
 
       <XFrames.Node style={{ flexDirection: "row", gap: { column: 8 }, alignItems: "center" }}>
         <XFrames.Button
-          label={isConnected ? "Disconnect" : "Connect"}
+          label={status === "reconnecting" ? "Cancel" : isConnected ? "Disconnect" : "Connect"}
           onClick={handleConnectDisconnect}
         />
         <XFrames.Button
@@ -111,7 +112,9 @@ export const ConnectionPanel = () => {
           shape="circle"
           style={{ width: 16, height: 16 }}
         />
-        <XFrames.UnformattedText text={status} />
+        <XFrames.UnformattedText
+          text={status === "reconnecting" ? `Reconnecting (${reconnectAttempt}/5)...` : status}
+        />
       </XFrames.Node>
 
       {status === "connected" && (
