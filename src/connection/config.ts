@@ -4,6 +4,7 @@ interface AppConfig {
   portPath?: string;
   baudRate?: number;
   coordFormat?: number;
+  signalSortByCno?: boolean;
 }
 
 const CONFIG_PATH = "./config.json";
