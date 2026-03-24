@@ -37,7 +37,7 @@
 14. ~~**Signal Strength: aggregate stats**~~ — Done. Summary line above bar chart shows total tracked, used count, mean CNO. Per-constellation color-coded breakdown with count, used, mean CNO. Shared GNSS constants in `utils/gnss.ts`.
 15. ~~**Signal Strength: sort toggle**~~ — Done. Checkbox "Sort by CNO" toggles between constellation order (default) and CNO descending. Preference persisted in `config.json`.
 16. ~~**Hardware: decode flags + RF trend**~~ — Done. MON-HW3 flags decoded into RTC Calib, Safe Boot, XTAL status rows. Jamming indicator PlotLine trend added with `useJamTrend()` hook.
-17. **Console: packet boundaries** — Visual separators between UBX packets. Inline message class/ID header.
+17. ~~**Console: packet boundaries**~~ — Done. UBX frame detection on raw bytes — buffers incoming data and scans for sync bytes (0xB5 0x62), prints separator header with message name, class/ID, and payload size before each packet's hex dump. Non-UBX bytes dumped without header.
 
 ### Phase 4: Visual Refinement
 
