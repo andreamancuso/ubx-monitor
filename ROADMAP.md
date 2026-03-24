@@ -41,7 +41,7 @@
 
 ### Phase 4: Visual Refinement
 
-18. **Tab indicators** — Colored dot on tabs with active data. Gray = no data, green = receiving.
+18. ~~**Tab indicators**~~ — Done. `indicatorColor` prop added to XFrames TabItem (C++ draws filled circle on tab header via ImDrawList). `useDataActivity` hook tracks serialManager event timestamps; green dot when receiving, gray when stale (3s threshold), no dot when disconnected.
 19. **Window title** — Dynamic: "ubx-monitor — COM3 @ 38400 — 3D Fix (12 sats)" or "ubx-monitor — Disconnected".
 20. **Color palette refinement** — Colorblind-friendly review. Shape indicators alongside color (✓/✗ icons).
 21. **Loading/transition states** — "Configuring..." on Enable UBX. No stale data flash on tab switch.
