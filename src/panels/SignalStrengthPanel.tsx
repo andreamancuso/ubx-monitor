@@ -1,18 +1,10 @@
 import * as React from "react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { XFrames } from "@xframes/node";
 import { PlotBarImperativeHandle } from "@xframes/common";
 import { useNavSat, SatInfo } from "../hooks/useNavSat";
 import { themeColors } from "../themes";
-
-const GNSS_PREFIX: Record<number, string> = {
-  0: "G",   // GPS
-  1: "S",   // SBAS
-  2: "E",   // Galileo
-  3: "C",   // BeiDou
-  5: "Q",   // QZSS
-  6: "R",   // GLONASS
-};
+import { GNSS_PREFIX, GNSS_NAME, GNSS_COLOR, GNSS_IDS } from "../utils/gnss";
 
 function satLabel(sat: SatInfo): string {
   const prefix = GNSS_PREFIX[sat.gnssId] ?? "?";
@@ -36,6 +28,45 @@ function cnoSeriesIndex(cno: number): number {
 export const SignalStrengthPanel = () => {
   const satellites = useNavSat();
   const barRef = useRef<PlotBarImperativeHandle>(null);
+
+  const stats = useMemo(() => {
+    if (!satellites) return null;
+
+    const tracked = satellites.filter((s) => s.cno > 0);
+    const totalTracked = tracked.length;
+    if (totalTracked === 0) return null;
+
+    const totalUsed = tracked.filter((s) => s.svUsed).length;
+    const meanCno = tracked.reduce((sum, s) => sum + s.cno, 0) / totalTracked;
+
+    const byConstellation = new Map<number, { count: number; used: number; sumCno: number }>();
+    for (const s of tracked) {
+      let entry = byConstellation.get(s.gnssId);
+      if (!entry) {
+        entry = { count: 0, used: 0, sumCno: 0 };
+        byConstellation.set(s.gnssId, entry);
+      }
+      entry.count++;
+      if (s.svUsed) entry.used++;
+      entry.sumCno += s.cno;
+    }
+
+    const constellations = GNSS_IDS
+      .filter((id) => byConstellation.has(id))
+      .map((id) => {
+        const e = byConstellation.get(id)!;
+        return {
+          gnssId: id,
+          name: GNSS_NAME[id] ?? `ID${id}`,
+          color: GNSS_COLOR[id] ?? "#888888",
+          count: e.count,
+          used: e.used,
+          meanCno: e.sumCno / e.count,
+        };
+      });
+
+    return { totalTracked, totalUsed, meanCno, constellations };
+  }, [satellites]);
 
   useEffect(() => {
     if (!satellites || !barRef.current) return;
@@ -73,7 +104,26 @@ export const SignalStrengthPanel = () => {
   }
 
   return (
-    <XFrames.Node style={{ flex: 1, padding: { all: 8 } }}>
+    <XFrames.Node style={{ flex: 1, padding: { all: 8 }, gap: { row: 4 } }}>
+      {stats && (
+        <XFrames.Node style={{ height: 28, flexDirection: "row", alignItems: "center" }}>
+          <XFrames.UnformattedText
+            text={`${stats.totalTracked} sats, ${stats.totalUsed} used \u2014 Mean CNO: ${stats.meanCno.toFixed(1)} dB-Hz`}
+            style={{ font: { name: "roboto-mono", size: 14 }, color: themeColors.silver }}
+          />
+        </XFrames.Node>
+      )}
+      {stats && (
+        <XFrames.Node style={{ gap: { row: 1 } }}>
+          {stats.constellations.map((c) => (
+            <XFrames.UnformattedText
+              key={c.gnssId}
+              text={`${c.name.padEnd(8)} ${String(c.count).padStart(2)} (${String(c.used).padStart(2)} used) \u00B7 ${c.meanCno.toFixed(1)} dB-Hz`}
+              style={{ font: { name: "roboto-mono", size: 14 }, color: c.color }}
+            />
+          ))}
+        </XFrames.Node>
+      )}
       <XFrames.PlotBar
         ref={barRef}
         axisAutoFit

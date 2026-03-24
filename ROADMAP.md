@@ -34,7 +34,7 @@
 11. ~~**Navigation: coordinate format toggle**~~ — Done. Combo dropdown (DD/DMS/DDM) with config.json persistence.
 12. ~~**Map: awaiting fix overlay + zoom display**~~ — Done. "Awaiting fix..." before first fix; after fix shows "Z15 · lat°N, lon°W" (zoom from onChange, GPS coords from NAV-PVT).
 13. ~~**Position Tracking: reset button**~~ — Done. Reset button clears all plots + stats. Header row shows sample count + elapsed time. Horizontal accuracy time-series plot added to bottom row. `formatDuration` extracted to `utils/format.ts` for reuse.
-14. **Signal Strength: aggregate stats** — Summary line: "24 sats, 18 used — Mean CNO: 34.2 dB-Hz". Constellation breakdown.
+14. ~~**Signal Strength: aggregate stats**~~ — Done. Summary line above bar chart shows total tracked, used count, mean CNO. Per-constellation color-coded breakdown with count, used, mean CNO. Shared GNSS constants in `utils/gnss.ts`.
 15. **Signal Strength: sort toggle** — Toggle between sort by constellation (default) or by CNO descending.
 16. **Hardware: decode flags + RF trend** — Parse MON-HW3 flags into readable bits. Jamming indicator sparkline/trend.
 17. **Console: packet boundaries** — Visual separators between UBX packets. Inline message class/ID header.
