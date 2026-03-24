@@ -7,6 +7,7 @@ import { useNavDop } from "../hooks/useNavDop";
 import { themeColors } from "../themes";
 import { LabelRow } from "../components/LabelRow";
 import { getConfig, updateConfig } from "../connection/config";
+import { formatDuration } from "../utils/format";
 
 const FIX_TYPES: Record<number, string> = {
   0: "No Fix",
@@ -95,13 +96,7 @@ function dopColor(val: number): string {
 }
 
 function formatUptime(ms: number): string {
-  const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (h > 0) return `${h}h ${m}m ${s}s`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
+  return formatDuration(Math.floor(ms / 1000));
 }
 
 export const NavigationStatus = () => {

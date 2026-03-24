@@ -23,8 +23,10 @@ export interface PositionHistory {
   scatterPoints: { x: number; y: number }[];
   latestAltitude: { x: number; y: number } | null;
   latestSpeed: { x: number; y: number } | null;
+  latestHAcc: { x: number; y: number } | null;
   cepStats: CepStats | null;
   sampleCount: number;
+  elapsedSec: number;
   resetCounter: number;
 }
 
@@ -37,8 +39,10 @@ export function usePositionHistory() {
     scatterPoints: [],
     latestAltitude: null,
     latestSpeed: null,
+    latestHAcc: null,
     cepStats: null,
     sampleCount: 0,
+    elapsedSec: 0,
     resetCounter: 0,
   });
 
@@ -49,8 +53,10 @@ export function usePositionHistory() {
       scatterPoints: [],
       latestAltitude: null,
       latestSpeed: null,
+      latestHAcc: null,
       cepStats: null,
       sampleCount: 0,
+      elapsedSec: 0,
       resetCounter: prev.resetCounter + 1,
     }));
   }, []);
@@ -103,6 +109,7 @@ export function usePositionHistory() {
       scatterPoints,
       latestAltitude: { x: elapsedSec, y: pvt.hMSL / 1000 },
       latestSpeed: { x: elapsedSec, y: pvt.gSpeed * 0.0036 },
+      latestHAcc: { x: elapsedSec, y: pvt.hAcc / 1000 },
       cepStats: {
         cep50,
         cep95,
@@ -110,6 +117,7 @@ export function usePositionHistory() {
         sampleCount: samples.length,
       },
       sampleCount: samples.length,
+      elapsedSec,
       resetCounter: prev.resetCounter,
     }));
   }, [pvt]);

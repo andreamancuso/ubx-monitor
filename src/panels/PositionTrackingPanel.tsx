@@ -6,6 +6,7 @@ import type {
   PlotLineImperativeHandle,
 } from "@xframes/common";
 import { usePositionHistory } from "../hooks/usePositionHistory";
+import { formatDuration } from "../utils/format";
 import { themeColors } from "../themes";
 import { SectionHeader } from "../components/SectionHeader";
 
@@ -13,14 +14,18 @@ export const PositionTrackingPanel = () => {
   const scatterRef = useRef<PlotScatterImperativeHandle>(null);
   const altitudeRef = useRef<PlotLineImperativeHandle>(null);
   const speedRef = useRef<PlotLineImperativeHandle>(null);
+  const hAccRef = useRef<PlotLineImperativeHandle>(null);
 
   const {
     scatterPoints,
     latestAltitude,
     latestSpeed,
+    latestHAcc,
     cepStats,
     sampleCount,
+    elapsedSec,
     resetCounter,
+    reset,
   } = usePositionHistory();
 
   // Reset plots when history is cleared
@@ -31,6 +36,7 @@ export const PositionTrackingPanel = () => {
       scatterRef.current?.resetData();
       altitudeRef.current?.resetData();
       speedRef.current?.resetData();
+      hAccRef.current?.resetData();
     }
   }, [resetCounter]);
 
@@ -52,6 +58,12 @@ export const PositionTrackingPanel = () => {
     speedRef.current.appendData(latestSpeed.x, latestSpeed.y);
   }, [latestSpeed]);
 
+  // Append to hAcc plot
+  useEffect(() => {
+    if (!hAccRef.current || !latestHAcc) return;
+    hAccRef.current.appendData(latestHAcc.x, latestHAcc.y);
+  }, [latestHAcc]);
+
   if (sampleCount === 0) {
     return (
       <XFrames.Node style={{ padding: { all: 8 } }}>
@@ -72,8 +84,29 @@ export const PositionTrackingPanel = () => {
       ].join("\n")
     : "";
 
+  const headerText = `${sampleCount} samples \u00B7 ${formatDuration(elapsedSec)}`;
+
   return (
     <XFrames.Node style={{ flex: 1, padding: { all: 8 }, gap: { row: 8 } }}>
+      {/* Header row: Reset + stats summary */}
+      <XFrames.Node
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: { column: 12 },
+          height: 28,
+        }}
+      >
+        <XFrames.Button label="Reset" onClick={reset} />
+        <XFrames.UnformattedText
+          text={headerText}
+          style={{
+            font: { name: "roboto-mono", size: 14 },
+            color: themeColors.silver,
+          }}
+        />
+      </XFrames.Node>
+
       {/* Top row: Scatter + Stats */}
       <XFrames.Node
         style={{ flex: 1, flexDirection: "row", gap: { column: 8 } }}
@@ -99,7 +132,7 @@ export const PositionTrackingPanel = () => {
         </XFrames.Node>
       </XFrames.Node>
 
-      {/* Bottom row: Altitude + Speed */}
+      {/* Bottom row: Altitude + Speed + H Accuracy */}
       <XFrames.Node
         style={{ flex: 1, flexDirection: "row", gap: { column: 8 } }}
       >
@@ -119,6 +152,15 @@ export const PositionTrackingPanel = () => {
           xAxisLabel="Time (s)"
           yAxisLabel="Speed (km/h)"
           legendLabel="Ground Speed"
+          style={{ flex: 1 }}
+        />
+        <XFrames.PlotLine
+          ref={hAccRef}
+          axisAutoFit
+          dataPointsLimit={3000}
+          xAxisLabel="Time (s)"
+          yAxisLabel="H Accuracy (m)"
+          legendLabel="H Accuracy"
           style={{ flex: 1 }}
         />
       </XFrames.Node>
