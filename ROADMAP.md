@@ -36,7 +36,7 @@
 13. ~~**Position Tracking: reset button**~~ — Done. Reset button clears all plots + stats. Header row shows sample count + elapsed time. Horizontal accuracy time-series plot added to bottom row. `formatDuration` extracted to `utils/format.ts` for reuse.
 14. ~~**Signal Strength: aggregate stats**~~ — Done. Summary line above bar chart shows total tracked, used count, mean CNO. Per-constellation color-coded breakdown with count, used, mean CNO. Shared GNSS constants in `utils/gnss.ts`.
 15. ~~**Signal Strength: sort toggle**~~ — Done. Checkbox "Sort by CNO" toggles between constellation order (default) and CNO descending. Preference persisted in `config.json`.
-16. **Hardware: decode flags + RF trend** — Parse MON-HW3 flags into readable bits. Jamming indicator sparkline/trend.
+16. ~~**Hardware: decode flags + RF trend**~~ — Done. MON-HW3 flags decoded into RTC Calib, Safe Boot, XTAL status rows. Jamming indicator PlotLine trend added with `useJamTrend()` hook.
 17. **Console: packet boundaries** — Visual separators between UBX packets. Inline message class/ID header.
 
 ### Phase 4: Visual Refinement

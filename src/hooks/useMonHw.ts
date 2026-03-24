@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { serialManager } from "../connection";
 import type { MonHw, MonHw3, MonRf } from "ubx-parser";
 
@@ -17,7 +17,9 @@ export interface RfStatusData {
 export interface HwStatusData {
   hwVersion: string;
   nPins: number;
-  flags: number;
+  rtcCalib: boolean;
+  safeBoot: boolean;
+  xtalAbsent: boolean;
 }
 
 export function useRfStatus() {
@@ -73,7 +75,9 @@ export function useHwStatus() {
       setData({
         hwVersion: msg.hwVersion,
         nPins: msg.nPins,
-        flags: msg.flags,
+        rtcCalib: msg.flags.rctCalib,
+        safeBoot: msg.flags.safeBoot,
+        xtalAbsent: msg.flags.xtalAbsent,
       });
     };
 
@@ -84,4 +88,24 @@ export function useHwStatus() {
   }, []);
 
   return data;
+}
+
+export function useJamTrend() {
+  const [latest, setLatest] = useState<{ x: number; y: number } | null>(null);
+  const startRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const onMonHw = (msg: MonHw) => {
+      if ("variant" in msg) return;
+      const now = Date.now();
+      if (startRef.current === null) startRef.current = now;
+      setLatest({ x: (now - startRef.current) / 1000, y: msg.jamInd });
+    };
+    serialManager.on("MON-HW", onMonHw);
+    return () => {
+      serialManager.off("MON-HW", onMonHw);
+    };
+  }, []);
+
+  return latest;
 }

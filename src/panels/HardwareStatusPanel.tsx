@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useRef, useEffect } from "react";
 import { XFrames } from "@xframes/node";
-import { useRfStatus, useHwStatus } from "../hooks/useMonHw";
+import type { PlotLineImperativeHandle } from "@xframes/common";
+import { useRfStatus, useHwStatus, useJamTrend } from "../hooks/useMonHw";
 import { themeColors } from "../themes";
 import { SectionHeader } from "../components/SectionHeader";
 import { LabelRow } from "../components/LabelRow";
@@ -50,6 +52,13 @@ function jamIndColor(val: number): string {
 export const HardwareStatusPanel = () => {
   const rf = useRfStatus();
   const hw = useHwStatus();
+  const latestJamInd = useJamTrend();
+  const jamRef = useRef<PlotLineImperativeHandle>(null);
+
+  useEffect(() => {
+    if (!jamRef.current || !latestJamInd) return;
+    jamRef.current.appendData(latestJamInd.x, latestJamInd.y);
+  }, [latestJamInd]);
 
   if (!rf && !hw) {
     return (
@@ -63,7 +72,7 @@ export const HardwareStatusPanel = () => {
   }
 
   return (
-    <XFrames.Node style={{ padding: { all: 8 }, gap: { row: 4 } }}>
+    <XFrames.Node style={{ flex: 1, padding: { all: 8 }, gap: { row: 4 } }}>
       {rf && (
         <>
           <SectionHeader text="RF Status" />
@@ -108,9 +117,25 @@ export const HardwareStatusPanel = () => {
           <SectionHeader text="Hardware" />
           <LabelRow label="HW Version:" value={hw.hwVersion} />
           <LabelRow label="Pins:" value={String(hw.nPins)} />
-          <LabelRow label="Flags:" value={`0x${hw.flags.toString(16).padStart(2, "0")}`} />
+          <LabelRow label="RTC Calib:" value={hw.rtcCalib ? "Yes" : "No"} />
+          <LabelRow label="Safe Boot:" value={hw.safeBoot ? "Yes" : "No"} />
+          <LabelRow
+            label="XTAL:"
+            value={hw.xtalAbsent ? "Absent" : "Present"}
+            color={hw.xtalAbsent ? "#e74c3c" : undefined}
+          />
         </>
       )}
+      <SectionHeader text="Jamming Trend" />
+      <XFrames.PlotLine
+        ref={jamRef}
+        axisAutoFit
+        dataPointsLimit={3000}
+        xAxisLabel="Time (s)"
+        yAxisLabel="Jam Index"
+        legendLabel="Jam Indicator"
+        style={{ flex: 1, width: "100%" }}
+      />
     </XFrames.Node>
   );
 };
